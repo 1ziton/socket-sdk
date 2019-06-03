@@ -19,7 +19,7 @@ export class Logger {
     this.start = Date.now();
   }
 
-  debug(...args: any) {
+  debug(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.debug)) {
       console.debug(this.id, `${this.getTime()}ms`, ...args);
     } else {
@@ -47,13 +47,13 @@ export class Logger {
     return instance;
   }
 
-  info(...args: any) {
+  info(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.info)) {
       console.info(this.id, `${this.getTime()}ms`, ...args);
     }
   }
 
-  error(...args: any) {
+  error(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.error)) {
       console.error(this.id, `${this.getTime()}ms`, ...args);
     } else {
@@ -61,7 +61,7 @@ export class Logger {
     }
   }
 
-  log(...args: any) {
+  log(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.log)) {
       console.log(this.id, `${this.getTime()}ms`, ...args);
     }
