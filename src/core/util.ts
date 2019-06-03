@@ -55,10 +55,10 @@ export function isNonEmptyString(value: any): boolean {
 
 export function isSupportWebsocket(): boolean {
   let isSupport = false;
-  if (!!window.WebSocket && window.WebSocket.prototype.send) {
+  /*  if (!!window.WebSocket && window.WebSocket.prototype.send) {
     isSupport = true;
   } else {
     isSupport = false;
-  }
+  } */
   return isSupport;
 }
