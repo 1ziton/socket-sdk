@@ -1,11 +1,11 @@
 /**
  * @author: giscafer ,https://github.com/giscafer
  * @date: 2019-06-03 18:26:50
- * @description:
+ * @description: config
  */
 export class SocketConfig {
   /**
-   * Server URL
+   * Server URL. Example: ws://127.0.0.1:15674/ws
    */
   url = '';
 

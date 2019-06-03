@@ -342,6 +342,7 @@ var heartBeat = {
     start: function(){
         var self = this;
         this.serverTimeoutObj = setInterval(function(){
+            console.log(Date.now())
             if(ws.readyState == 1){
                 console.log("连接状态，发送消息保持连接");
                 pingMsg.messageId = uuid(16, 16);

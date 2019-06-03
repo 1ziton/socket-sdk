@@ -42,7 +42,9 @@ export class Logger {
   static getInstance(id: string): Logger {
     const instance = Logger.instances[id];
     if (isNil(instance)) {
-      throw new Error(`No logger instance found witdh id ${id}`);
+      // throw new Error(`No logger instance found witdh id ${id}`);
+      this.create(id);
+      return Logger.instances[id];
     }
     return instance;
   }

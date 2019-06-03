@@ -14,3 +14,19 @@ export interface ClientMessage {
   messageId: string;
   jsonMessage: string;
 }
+
+export interface BussinessParams {
+  bussinessAction: string;
+  contentId: string;
+}
+
+export interface Group {
+  groupName: string;
+  [key: string]: string;
+}
+export interface UserMessageParams {
+  userId: string;
+  channel: string;
+  group: Group;
+  content: string;
+}

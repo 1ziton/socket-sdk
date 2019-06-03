@@ -51,3 +51,13 @@ export function filterNotEmptyNode(node: Node): Node | null {
 export function isNonEmptyString(value: any): boolean {
   return typeof value === 'string' && value !== '';
 }
+
+export function isSupportWebsocket(): boolean {
+  let isSupport = false;
+  if (!!(<any>window).WebSocket && (<any>window).WebSocket.prototype.send) {
+    isSupport = true;
+  } else {
+    isSupport = false;
+  }
+  return isSupport;
+}
