@@ -14,7 +14,7 @@ import { uuid } from './uuid';
 
 const EventProxy = require('eventproxy');
 
-declare let ws: WebSocket | any;
+let ws: WebSocket | any;
 
 // Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
 // import "core-js/fn/array.find"
