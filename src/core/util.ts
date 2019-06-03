@@ -3,6 +3,7 @@
  * @date: 2019-06-03 18:02:07
  * @description: utils 函数
  */
+declare var window: any;
 
 export function isFunction(val: any): boolean {
   return Object.prototype.toString.call(val) === '[object Function]';
@@ -54,7 +55,7 @@ export function isNonEmptyString(value: any): boolean {
 
 export function isSupportWebsocket(): boolean {
   let isSupport = false;
-  if (!!(<any>window).WebSocket && (<any>window).WebSocket.prototype.send) {
+  if (!!window.WebSocket && window.WebSocket.prototype.send) {
     isSupport = true;
   } else {
     isSupport = false;
