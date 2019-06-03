@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import SocketClient from '../src/index';
 
 /**
