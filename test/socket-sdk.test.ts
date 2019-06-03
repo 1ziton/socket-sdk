@@ -15,7 +15,7 @@ describe('SocketClient test', () => {
   it('SocketClient is instantiable', () => {
     expect(
       new SocketClient({
-        url: '',
+        url: 'ws://socket-server-test01.1ziton.com/echo',
         authToken: ''
       })
     ).toBeInstanceOf(SocketClient);
