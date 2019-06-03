@@ -1,6 +1,8 @@
-import EventProxy from 'eventProxy';
 import { DEVICECODE } from './constants';
-import { SocketConfig, HeartBeatPackage } from './interfaces';
+import { HeartBeatPackage } from './interfaces';
+import { SocketConfig } from './socket.config';
+
+const EventProxy = require('eventproxy');
 
 declare let ws: WebSocket | any;
 /**
@@ -19,7 +21,7 @@ export default class SocketClient {
     messageId: '',
     flag: false
   };
-  private readonly ep: EventProxy = new EventProxy();
+  private readonly ep = new EventProxy();
   config: SocketConfig;
   constructor(config: SocketConfig) {
     this.config = config;
