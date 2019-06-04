@@ -20,7 +20,14 @@ export class SocketConfig {
    *
    * Typical value 0 - disabled
    */
-  heartbeat?: number;
+  pingTimeout? = 15000;
+  /**
+   * How often to outcoming heartbeat?
+   * Interval in milliseconds, set to 0 to disable
+   *
+   * Typical value 0 - disabled
+   */
+  pongTimeout? = 10000;
 
   /**
    * Wait in milliseconds before attempting auto reconnect
@@ -28,8 +35,11 @@ export class SocketConfig {
    *
    * Typical value 5000 (5 seconds)
    */
-  reconnectDelay? = 5000;
+  reconnectDelay? = 1000 * 60 * 8;
 
+  pingMsg? = 'heartbeat';
+
+  repeatLimit? = 20;
   /** Enable client debugging? */
   debug? = false;
 }

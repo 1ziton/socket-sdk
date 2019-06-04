@@ -3,14 +3,17 @@
  * @param len length of string
  * @param radix
  */
+/*tslint:disable */
 export function uuid(len: number, radix: number): string {
   let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-  let uuid = [];
+  let uuid: any = [];
   radix = radix || chars.length;
 
   if (len) {
     // Compact form
-    for (let i = 0; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)];
+    for (let i = 0; i < len; i++) {
+      uuid[i] = chars[0 | (Math.random() * radix)];
+    }
   } else {
     // rfc4122, version 4 form
     let r;

@@ -42,12 +42,6 @@ import SocketClient from 'socket-sdk/dist/lib/socket-sdk';
 - `npm run lint`: Lints code
 - `npm run commit`: Commit using conventional commit style ([husky](https://github.com/typicode/husky) will tell you to use it if you haven't :wink:)
 
-### Excluding peerDependencies
-
-On library development, one might want to set some peer dependencies, and thus remove those from the final bundle. You can see in [Rollup docs](https://rollupjs.org/#peer-dependencies) how to do that.
-
-Good news: the setup is here for you, you must only include the dependency name in `external` property within `rollup.config.js`. For example, if you want to exclude `lodash`, just write there `external: ['lodash']`.
-
 ### Git Hooks
 
 There is already set a `precommit` hook for formatting your code with Prettier :nail_care:
@@ -61,4 +55,4 @@ This makes more sense in combination with [automatic releases](#automatic-releas
 
 ### Contributing
 
-[CONTRIBUTING.md](./CONTRIBUTING.md)
+[CONTRIBUTING.md](https://github.com/1ziton/socket-sdk/blob/master/CONTRIBUTING.md)

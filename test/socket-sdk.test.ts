@@ -43,7 +43,9 @@ describe('SocketClient test', () => {
 
   it('queryHistoryPushMessage is success', () => {
     wsInstance.queryHistoryPushMessage({ page: 1, size: 20 }, (result: any) => {
+      console.log(1111);
       const { code, data, first } = result;
+      console.log(data);
       expect(code).toBe(2000);
       expect(data).toBeInstanceOf(Array);
       expect(first).toBeTruthy();

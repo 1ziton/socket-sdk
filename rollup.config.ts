@@ -1,10 +1,10 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import sourceMaps from 'rollup-plugin-sourcemaps';
 import camelCase from 'lodash.camelcase';
-import typescript from 'rollup-plugin-typescript2';
+import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
-
+import resolve from 'rollup-plugin-node-resolve';
+import sourceMaps from 'rollup-plugin-sourcemaps';
+import typescript from 'rollup-plugin-typescript2';
+import builtins from 'rollup-plugin-node-builtins';
 const pkg = require('./package.json');
 
 const libraryName = 'socket-sdk';
@@ -33,6 +33,7 @@ export default {
     resolve(),
 
     // Resolve source maps to the original source
-    sourceMaps()
+    sourceMaps(),
+    builtins()
   ]
 };

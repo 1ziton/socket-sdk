@@ -4,20 +4,25 @@
  * @date: 2019-06-03 18:06:57
  * @description: 封装 Socket client
  */
-
+// tslint:disable:no-empty
+import EventProxy from './event';
 import { DEVICECODE, SERVER_PUSH_MESSAGE_TRIGGER } from './constants';
-import { BussinessParams, ClientMessage, HeartBeatPackage, UserMessageParams } from './interfaces';
+import { HeartBeat } from './heartbeat';
+import {
+  BussinessParams,
+  ClientMessage,
+  HeartBeatPackage,
+  PingMessage,
+  UserMessageParams
+} from './interfaces';
 import { Logger } from './logger';
 import { SocketAction } from './socket-action';
 import { SocketConfig } from './socket-config';
 import { isFunction, isSupportWebsocket } from './util';
 import { uuid } from './uuid';
+//
 
-const EventProxy = require('eventproxy');
-
-let ws: WebSocket | any;
-
-export default class SocketClient {
+export default class SocketClient extends HeartBeat {
   private watchForUserReceiptFlag = false;
 
   private watchForReceiptFlag = false;
@@ -30,7 +35,10 @@ export default class SocketClient {
   private config: SocketConfig;
   private readonly ep = new EventProxy();
 
+  ws: WebSocket | any;
+
   constructor(config: SocketConfig) {
+    super(config);
     this.config = config;
     this.initAndConnect();
   }
@@ -51,26 +59,16 @@ export default class SocketClient {
   }
 
   connect() {
-    if (ws == null || ws.readyState !== 1) {
-      ws = new WebSocket(
+    try {
+      this.ws = new WebSocket(
         `${this.config.url}?authStr=${this.config.authToken}&deviceCode=${DEVICECODE}`
       );
-      ws.onopen = (event: any) => {
-        this.onOpenHandler(event);
-      };
-
-      ws.onmessage = (event: any) => {
-        this.onMessageHandler(event);
-      };
-
-      ws.onclose = (event: any) => {
-        this.onWebSocketClose(event);
-      };
-      ws.onerror = (event: any) => {
-        this.onWebSocketError(event);
-      };
-    } else {
-      Logger.getInstance('websocket status').debug(`state-${ws.readyState}`);
+      this.initEventHandler();
+    } catch (e) {
+      this.reconnect(() => {
+        this.connect();
+      });
+      throw e;
     }
   }
 
@@ -78,73 +76,35 @@ export default class SocketClient {
    * It will disconnect from the scoket.
    */
   disConnect(): void {
-    if (ws != null) {
-      ws.close();
-      ws.onclose = null;
-      ws.onopen = null;
-      ws.onerror = null;
-      ws.onmessage = null;
-      ws = null;
+    if (this.ws != null) {
+      this.ws.close();
+      this.ws.onclose = null;
+      this.ws.onopen = null;
+      this.ws.onerror = null;
+      this.ws.onmessage = null;
+      this.ws = null;
     }
   }
 
-  /**
-   * websocket message receive handler
-   * @param event
-   */
-  private onMessageHandler(event: any) {
-    let message = '';
-    try {
-      let msgObj = JSON.parse(event.data) || {};
-      if (!(msgObj && msgObj.action)) {
-        return;
-      }
-      const action = msgObj.action;
-      if (action === SocketAction.SEND_MESSAGE_USER) {
-        // 端对端消息
-        // {"action":"SEND_MESSAGE_USER_ACTION","messageId":"HFG3UV71","code":4000,"desc":null,"jsonResult":"{\"userId\":\"U100\",\"channel\":\"C100\",\"group\":null,\"content\":\"hello\"}"}
-        let jsonResult = JSON.parse(msgObj.jsonResult);
-        const { group = {}, channel, userId, content } = jsonResult;
-        const { groupName = '' } = group;
-        message = `channel:${channel}，userId:${userId}，groupName:${groupName}， say:${content}`;
-        // 根据msgId唯一触发执行的事件，并传送数据data
-        this.ep.trigger(`ep_message_${SocketAction.SEND_MESSAGE_USER}`, jsonResult);
-        this.debug(action, message);
-      } else if (action === SocketAction.CLIENT_PING) {
-        // let content = JSON.parse(msgObj.jsonResult);
-        if (this.heartBeatPackage.flag) {
-          if (msgObj.messageId === this.heartBeatPackage.messageId) {
-            this.heartBeatPackage.messageId = msgObj;
-            this.heartBeatPackage.flag = false;
-          } else {
-            this.disConnect();
-            this.connect();
-          }
-        }
-        this.debug('PING', message);
-      } else if (action === SocketAction.REGISTER_GROUP) {
-        let content = JSON.parse(msgObj.jsonResult);
-        // ep.trigger(`ep_message_${msgId}`, content);
-        this.debug(action, message);
-      } else if (action === SocketAction.QUERY_RESULT) {
-        let jsonResult = JSON.parse(msgObj.jsonResult);
-        this.ep.trigger(`ep_result_message_${msgObj.messageId}`, jsonResult);
-        this.debug(action, jsonResult);
-      } else if (action === SocketAction.SERVER_PUSH_MESSAGE) {
-        // 业务端推送消息
-        let jsonResult = JSON.parse(msgObj.jsonResult);
-        if (this.watchForReceiptFlag) {
-          this.ep.trigger(SERVER_PUSH_MESSAGE_TRIGGER, jsonResult);
-        } else {
-          Logger.getInstance('onMessageHandler').info(
-            `>> watchForReceiptFlag function not set the value, pass deal with push message.${jsonResult}`
-          );
-        }
-        this.debug(action, jsonResult);
-      }
-    } catch (e) {
-      Logger.getInstance('onMessageHandler').error(e);
-    }
+  initEventHandler() {
+    this.ws.onopen = (event: any) => {
+      this.onOpenHandler(event);
+    };
+
+    this.ws.onclose = (event: any) => {
+      this.onWebSocketClose(event);
+    };
+
+    this.ws.onerror = (event: any) => {
+      this.onWebSocketError(event);
+    };
+
+    this.ws.onmessage = (event: any) => {
+      this.onMessageHandler(event);
+      // 如果获取到消息，心跳检测重置
+      // 拿到任何消息都说明当前连接是正常的
+      this.heartCheck();
+    };
   }
 
   /**
@@ -197,7 +157,7 @@ export default class SocketClient {
       callback(data);
     });
     try {
-      ws.send(JSON.stringify(clientJson));
+      this.ws.send(JSON.stringify(clientJson));
     } catch (e) {
       Logger.getInstance('markMessageAsRead').error(e);
     }
@@ -213,34 +173,33 @@ export default class SocketClient {
     if (!isFunction(callback)) {
       throw new Error('cb is not a function');
     }
-    if (ws == null) {
+    if (this.ws === null) {
       this.connect();
     }
-    if (ws != null) {
-      const jsonMessage: UserMessageParams = {
-        userId: userId,
-        channel: channel,
-        group: { groupName: groupName },
-        content: message
-      };
-      const clientJson: ClientMessage = {
-        action: SocketAction.SEND_MESSAGE_USER,
-        messageId: uuid(16, 16),
-        jsonMessage: JSON.stringify(jsonMessage)
-      };
-      // 发送到后端之前，根据msgId自定义监听事件名称，onMessage会自动触发此事件，然后执行cb回调，可以达到异步回调效果
-      // once 是只监听一次这个事件，执行后自动解绑
-      Logger.getInstance('sendUserMessage').info(
-        `read send message with messageId:${clientJson.messageId}`
-      );
-      this.ep.once(`ep_message_${clientJson.messageId}`, (data: any) => {
-        callback(data);
-      });
-      try {
-        ws.send(JSON.stringify(clientJson));
-      } catch (e) {
-        Logger.getInstance('sendUserMessage').error(e);
-      }
+
+    const jsonMessage: UserMessageParams = {
+      userId: userId,
+      channel: channel,
+      group: { groupName: groupName },
+      content: message
+    };
+    const clientJson: ClientMessage = {
+      action: SocketAction.SEND_MESSAGE_USER,
+      messageId: uuid(16, 16),
+      jsonMessage: JSON.stringify(jsonMessage)
+    };
+    // 发送到后端之前，根据msgId自定义监听事件名称，onMessage会自动触发此事件，然后执行cb回调，可以达到异步回调效果
+    // once 是只监听一次这个事件，执行后自动解绑
+    Logger.getInstance('sendUserMessage').info(
+      `read send message with messageId:${clientJson.messageId}`
+    );
+    this.ep.once(`ep_message_${clientJson.messageId}`, (data: any) => {
+      callback(data);
+    });
+    try {
+      this.ws.send(JSON.stringify(clientJson));
+    } catch (e) {
+      Logger.getInstance('sendUserMessage').error(e);
     }
   }
 
@@ -264,7 +223,7 @@ export default class SocketClient {
     });
     try {
       let msg = JSON.stringify(clientJson);
-      // ws.send(JSON.stringify(clientJson));
+      // this.ws.send(JSON.stringify(clientJson));
       this.send(msg, () => {
         Logger.getInstance(SocketAction.QUERY_HISTORY_MESSAGE).debug('发送成功！');
       });
@@ -278,9 +237,9 @@ export default class SocketClient {
    * @param message
    * @param callback
    */
-  send(message: string, callback: Function) {
-    this.waitForConnection(function() {
-      ws.send(message);
+  send(message: string, callback: Function = () => {}) {
+    this.waitForConnection(() => {
+      this.ws.send(message);
       if (isFunction(callback)) {
         callback();
       }
@@ -293,7 +252,7 @@ export default class SocketClient {
    * @param interval
    */
   waitForConnection(callback: Function, interval: number) {
-    if (ws.readyState === 1) {
+    if (this.ws.readyState === 1) {
       if (isFunction(callback)) {
         callback();
       }
@@ -303,6 +262,91 @@ export default class SocketClient {
         this.waitForConnection(callback, interval);
       }, interval);
     }
+  }
+
+  /**
+   * websocket message receive handler
+   * @param event
+   */
+  private onMessageHandler(event: any) {
+    let message = event.data;
+    try {
+      let msgObj = JSON.parse(event.data) || {};
+      if (!(msgObj && msgObj.action)) {
+        return;
+      }
+      const action = msgObj.action;
+      if (action === SocketAction.SEND_MESSAGE_USER) {
+        // 端对端消息
+        // {"action":"SEND_MESSAGE_USER_ACTION","messageId":"HFG3UV71","code":4000,"desc":null,"jsonResult":"{\"userId\":\"U100\",\"channel\":\"C100\",\"group\":null,\"content\":\"hello\"}"}
+        let jsonResult = JSON.parse(msgObj.jsonResult);
+        const { group = {}, channel, userId, content } = jsonResult;
+        const { groupName = '' } = group;
+        message = `channel:${channel}，userId:${userId}，groupName:${groupName}， say:${content}`;
+        // 根据msgId唯一触发执行的事件，并传送数据data
+        this.ep.trigger(`ep_message_${SocketAction.SEND_MESSAGE_USER}`, jsonResult);
+        this.debug(action, message);
+      } else if (action === SocketAction.CLIENT_PING) {
+        // let content = JSON.parse(msgObj.jsonResult);
+        /* if (!this.heartBeatPackage.flag) {
+          return;
+        }
+        if (msgObj.messageId === this.heartBeatPackage.messageId) {
+          this.heartBeatPackage.messageId = msgObj;
+          this.heartBeatPackage.flag = false;
+        } else {
+          this.disConnect();
+          this.connect();
+        } */
+        this.debug('PING', message);
+      } else if (action === SocketAction.REGISTER_GROUP) {
+        let jsonResult = JSON.parse(msgObj.jsonResult);
+        // ep.trigger(`ep_message_${msgId}`, jsonResult);
+        this.debug(action, message);
+      } else if (action === SocketAction.QUERY_RESULT) {
+        let jsonResult = JSON.parse(msgObj.jsonResult);
+        this.ep.trigger(`ep_result_message_${msgObj.messageId}`, jsonResult);
+        this.debug(action, jsonResult);
+      } else if (action === SocketAction.SERVER_PUSH_MESSAGE) {
+        // 业务端推送消息
+        let jsonResult = JSON.parse(msgObj.jsonResult);
+        if (this.watchForReceiptFlag) {
+          this.ep.trigger(SERVER_PUSH_MESSAGE_TRIGGER, jsonResult);
+        } else {
+          Logger.getInstance('onMessageHandler').info(
+            `>> watchForReceiptFlag function not set the value, pass deal with push message.${jsonResult}`
+          );
+        }
+        this.debug(action, jsonResult);
+      }
+    } catch (e) {
+      Logger.getInstance('onMessageHandler').error(e);
+    }
+  }
+
+  heartCheck() {
+    this.heartReset();
+    this.heartStart();
+  }
+
+  heartStart() {
+    let pingMsg: PingMessage = {
+      action: SocketAction.CLIENT_PING,
+      messageId: '',
+      jsonMessage: 'ping'
+    };
+    // No reconnection, no heartbeat
+    if (this.forbidReconnect) return;
+    this.pingTimeoutId = setTimeout(() => {
+      // 这里发送一个心跳，后端收到后，返回一个心跳消息，onmessage拿到返回的心跳就说明连接正常
+      pingMsg.messageId = uuid(16, 16);
+      this.ws.send(JSON.stringify(pingMsg));
+      // 如果超过一定时间还没重置，说明后端主动断开了
+      this.pongTimeoutId = setTimeout(() => {
+        // 如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
+        this.ws.close();
+      }, this.opts.pongTimeout);
+    }, this.opts.pingTimeout);
   }
 
   private debug(action: string, ...args: any[]) {
