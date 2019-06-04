@@ -1,5 +1,6 @@
 /**
- * @author: giscafer ,https://github.com/giscafer
+ * @author: @liangjingmin
+ * @maitainby @giscafer ,https://github.com/giscafer
  * @date: 2019-06-03 18:06:57
  * @description: 封装 Socket client
  */
@@ -16,9 +17,6 @@ const EventProxy = require('eventproxy');
 
 let ws: WebSocket | any;
 
-// Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
-// import "core-js/fn/array.find"
-// ...
 export default class SocketClient {
   private watchForUserReceiptFlag = false;
 
@@ -35,6 +33,10 @@ export default class SocketClient {
   constructor(config: SocketConfig) {
     this.config = config;
     this.initAndConnect();
+  }
+
+  get url(): string {
+    return this.config.url;
   }
 
   initAndConnect() {
@@ -71,6 +73,7 @@ export default class SocketClient {
       Logger.getInstance('websocket status').debug(`state-${ws.readyState}`);
     }
   }
+
   /**
    * It will disconnect from the scoket.
    */
@@ -85,6 +88,10 @@ export default class SocketClient {
     }
   }
 
+  /**
+   * websocket message receive handler
+   * @param event
+   */
   private onMessageHandler(event: any) {
     let message = '';
     try {
@@ -117,7 +124,6 @@ export default class SocketClient {
         this.debug('PING', message);
       } else if (action === SocketAction.REGISTER_GROUP) {
         let content = JSON.parse(msgObj.jsonResult);
-        // 根据msgId唯一触发执行的事件，并传送数据data
         // ep.trigger(`ep_message_${msgId}`, content);
         this.debug(action, message);
       } else if (action === SocketAction.QUERY_RESULT) {
@@ -131,8 +137,7 @@ export default class SocketClient {
           this.ep.trigger(SERVER_PUSH_MESSAGE_TRIGGER, jsonResult);
         } else {
           Logger.getInstance('onMessageHandler').info(
-            '>> watchForReceiptFlag function not set the value, pass deal with push message.' +
-              jsonResult
+            `>> watchForReceiptFlag function not set the value, pass deal with push message.${jsonResult}`
           );
         }
         this.debug(action, jsonResult);
@@ -239,6 +244,67 @@ export default class SocketClient {
     }
   }
 
+  /**
+   * 查询收到业务端推送历史消息
+   * @param pageInfo
+   * @param callback
+   */
+  queryHistoryPushMessage(pageInfo: { page: number; size: number }, callback: Function) {
+    const jsonMessage = {
+      bussinessAction: SocketAction.QUERY_HISTORY_MESSAGE,
+      ...pageInfo
+    };
+    const clientJson = {
+      action: SocketAction.CLIENT_QUERY,
+      messageId: uuid(16, 16),
+      jsonMessage: JSON.stringify(jsonMessage)
+    };
+    this.ep.once(`ep_result_message_${clientJson.messageId}`, (data: any) => {
+      callback(data);
+    });
+    try {
+      let msg = JSON.stringify(clientJson);
+      // ws.send(JSON.stringify(clientJson));
+      this.send(msg, () => {
+        Logger.getInstance(SocketAction.QUERY_HISTORY_MESSAGE).debug('发送成功！');
+      });
+    } catch (e) {
+      Logger.getInstance(SocketAction.QUERY_HISTORY_MESSAGE).error(e);
+    }
+  }
+
+  /**
+   * send messages via a proxy function that waits for the readyState to be 1
+   * @param message
+   * @param callback
+   */
+  send(message: string, callback: Function) {
+    this.waitForConnection(function() {
+      ws.send(message);
+      if (isFunction(callback)) {
+        callback();
+      }
+    }, 1000);
+  }
+
+  /**
+   * waits for the readyState to be 1
+   * @param callback
+   * @param interval
+   */
+  waitForConnection(callback: Function, interval: number) {
+    if (ws.readyState === 1) {
+      if (isFunction(callback)) {
+        callback();
+      }
+    } else {
+      // optional: implement backoff for interval here
+      setTimeout(() => {
+        this.waitForConnection(callback, interval);
+      }, interval);
+    }
+  }
+
   private debug(action: string, ...args: any[]) {
     if (this.config.debug) {
       Logger.getInstance(action).debug(args);
@@ -246,11 +312,11 @@ export default class SocketClient {
   }
 
   private onOpenHandler(event: any) {
-    console.log('websocket connected.');
+    Logger.getInstance('websocket status').info('Opening a connection...');
     // heartBeat.reset().start();
   }
   private onWebSocketClose(event: any) {
-    //服务器端主动断开
+    // 服务器端主动断开
     Logger.getInstance('websocket status').info('websocket onclose event, connect again');
   }
 

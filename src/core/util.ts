@@ -55,6 +55,7 @@ export function isNonEmptyString(value: any): boolean {
 
 export function isSupportWebsocket(): boolean {
   let isSupport = false;
+  // tslint:disable-next-line:no-extra-boolean-cast
   if (!!window.WebSocket && window.WebSocket.prototype.send) {
     isSupport = true;
   } else {
