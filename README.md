@@ -1,6 +1,7 @@
 # socket-sdk
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![NPM version](https://img.shields.io/npm/v/socket-sdk.svg?style=flat-square)](https://www.npmjs.com/package/socket-sdk)
 [![Greenkeeper badge](https://badges.greenkeeper.io/1ziton/socket-sdk.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/1ziton/socket-sdk.svg?branch=master)](https://travis-ci.org/1ziton/socket-sdk)
 [![Coveralls](https://img.shields.io/coveralls/1ziton/socket-sdk.svg)](https://coveralls.io/github/1ziton/socket-sdk)
@@ -58,23 +59,6 @@ By default, there are two disabled git hooks. They're set up when you run the `n
 
 This makes more sense in combination with [automatic releases](#automatic-releases)
 
-### FAQ
+### Contributing
 
-#### `Array.prototype.from`, `Promise`, `Map`... is undefined?
-
-TypeScript or Babel only provides down-emits on syntactical features (`class`, `let`, `async/await`...), but not on functional features (`Array.prototype.find`, `Set`, `Promise`...), . For that, you need Polyfills, such as [`core-js`](https://github.com/zloirock/core-js) or [`babel-polyfill`](https://babeljs.io/docs/usage/polyfill/) (which extends `core-js`).
-
-For a library, `core-js` plays very nicely, since you can import just the polyfills you need:
-
-```javascript
-import "core-js/fn/array/find"
-import "core-js/fn/string/includes"
-import "core-js/fn/promise"
-...
-```
-
-## Resources
-
-- [Write a library using TypeScript library starter](https://dev.to/alexjoverm/write-a-library-using-typescript-library-starter) by [@alexjoverm](https://github.com/alexjoverm/)
-- [📺 Create a TypeScript Library using typescript-library-starter](https://egghead.io/lessons/typescript-create-a-typescript-library-using-typescript-library-starter) by [@alexjoverm](https://github.com/alexjoverm/)
-- [Introducing TypeScript Library Starter Lite](https://blog.tonysneed.com/2017/09/15/introducing-typescript-library-starter-lite/) by [@tonysneed](https://github.com/tonysneed)
+[CONTRIBUTING.md](./CONTRIBUTING.md)
