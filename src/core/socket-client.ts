@@ -9,7 +9,7 @@ import { DEVICECODE, SERVER_PUSH_MESSAGE_TRIGGER } from './constants';
 import { BussinessParams, ClientMessage, HeartBeatPackage, UserMessageParams } from './interfaces';
 import { Logger } from './logger';
 import { SocketAction } from './socket-action';
-import { SocketConfig } from './socket.config';
+import { SocketConfig } from './socket-config';
 import { isFunction, isSupportWebsocket } from './util';
 import { uuid } from './uuid';
 

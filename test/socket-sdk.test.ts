@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import SocketClient from '../src/index';
+import SocketClient, { SocketConfig } from '../src/index';
 import { post } from './../src/core/fetch';
 
 const ENDPOINT = 'socket-server-test01.1ziton.com';
@@ -28,10 +28,11 @@ describe('SocketClient test', () => {
   });
 
   it('SocketClient is instantiable', () => {
-    wsInstance = new SocketClient({
+    const config: SocketConfig = {
       url: WS_URL,
       authToken
-    });
+    };
+    wsInstance = new SocketClient(config);
     expect(wsInstance).toBeInstanceOf(SocketClient);
   });
 

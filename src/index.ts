@@ -3,4 +3,8 @@
 // ...
 
 import SocketClient from './core/socket-client';
+
+export * from './core/socket-action';
+export * from './core/socket-config';
+
 export default SocketClient;
