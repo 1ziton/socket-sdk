@@ -1,8 +1,11 @@
 {
   "name": "socket-sdk",
-  "version": "0.0.0-development",
-  "description": "",
-  "keywords": [],
+  "version": "0.2.0",
+  "description": "Socket sdk for javascript",
+  "keywords": [
+    "socket",
+    "websocket"
+  ],
   "main": "dist/socket-sdk.umd.js",
   "module": "dist/socket-sdk.es5.js",
   "typings": "dist/types/socket-sdk.d.ts",
