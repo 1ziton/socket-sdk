@@ -41,7 +41,7 @@ export default class SocketClient extends HeartBeat {
   constructor(config: SocketConfig) {
     super({ ...defaultConfig, ...config });
     this.config = { ...defaultConfig, ...config };
-    console.log(this.config);
+    this.debug('SocketConfig', JSON.stringify(this.config));
     this.initAndConnect();
   }
 

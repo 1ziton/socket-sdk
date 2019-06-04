@@ -41,14 +41,13 @@ describe('SocketClient test', () => {
     expect(url).toBe(WS_URL);
   });
 
-  it('queryHistoryPushMessage is success', () => {
+  it('queryHistoryPushMessage is success', done => {
     wsInstance.queryHistoryPushMessage({ page: 1, size: 20 }, (result: any) => {
-      console.log(1111);
       const { code, data, first } = result;
-      console.log(data);
       expect(code).toBe(2000);
       expect(data).toBeInstanceOf(Array);
       expect(first).toBeTruthy();
+      done();
     });
   });
 });
