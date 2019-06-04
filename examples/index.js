@@ -16,7 +16,11 @@ function demoConnect() {
 function createSocket(token, address) {
   client = new SocketClient({
     url: `ws://${address}/echo`,
-    authToken: token
+    authToken: token,
+    pingTimeout: 2500,
+    pongTimeout: 2000,
+    reconnectDelay: 3000,
+    debug: true
   });
   //设置接收消息推送处理方法
   client.watchForReceipt(function(data) {

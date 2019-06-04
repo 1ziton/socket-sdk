@@ -21,6 +21,7 @@ import { SocketConfig } from './socket-config';
 import { isFunction, isSupportWebsocket } from './util';
 import { uuid } from './uuid';
 //
+const defaultConfig = new SocketConfig();
 
 export default class SocketClient extends HeartBeat {
   private watchForUserReceiptFlag = false;
@@ -38,8 +39,9 @@ export default class SocketClient extends HeartBeat {
   ws: WebSocket | any;
 
   constructor(config: SocketConfig) {
-    super(config);
-    this.config = config;
+    super({ ...defaultConfig, ...config });
+    this.config = { ...defaultConfig, ...config };
+    console.log(this.config);
     this.initAndConnect();
   }
 
