@@ -1,10 +1,10 @@
 /**
  * @author: giscafer ,https://github.com/giscafer
  * @date: 2019-06-03 17:42:13
- * @description: 日记类
+ * @description: Logger class
  */
 
-import { isNotNil, isFunction, isNil } from './util';
+import { formatTime, isFunction, isNil, isNotNil } from './util';
 
 export class Logger {
   static instances: {
@@ -27,8 +27,9 @@ export class Logger {
     }
   }
 
-  getTime(): number {
-    return Date.now() - this.start;
+  getTime(): string {
+    // return `${Date.now() - this.start}ms`;
+    return formatTime(new Date());
   }
 
   static create(id: string) {
@@ -51,13 +52,13 @@ export class Logger {
 
   info(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.info)) {
-      console.info(this.id, `${this.getTime()}ms`, ...args);
+      console.info(this.id, `${this.getTime()}`, ...args);
     }
   }
 
   error(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.error)) {
-      console.error(this.id, `${this.getTime()}ms`, ...args);
+      console.error(this.id, `${this.getTime()}`, ...args);
     } else {
       this.info(...args);
     }
@@ -65,7 +66,7 @@ export class Logger {
 
   log(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.log)) {
-      console.log(this.id, `${this.getTime()}ms`, ...args);
+      console.log(this.id, `${this.getTime()}`, ...args);
     }
   }
 }

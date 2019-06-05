@@ -56,3 +56,7 @@ This makes more sense in combination with [automatic releases](#automatic-releas
 ### Contributing
 
 [CONTRIBUTING.md](https://github.com/1ziton/socket-sdk/blob/master/CONTRIBUTING.md)
+
+## License
+
+@1ziton MIT
