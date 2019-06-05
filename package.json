@@ -1,6 +1,6 @@
 {
   "name": "socket-sdk",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Socket sdk for javascript",
   "keywords": [
     "socket",
@@ -30,6 +30,7 @@
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",
     "deploy-docs": "ts-node tools/gh-pages-publish",
+    "deploy-docs2": "ts-node tools/gh-pages-publish.local",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "commit": "git-cz",
     "semantic-release": "semantic-release",

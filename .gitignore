@@ -12,3 +12,4 @@ compiled
 docs
 package-lock.json
 token.txt
+**/*/gh-pages-publish.local.ts
