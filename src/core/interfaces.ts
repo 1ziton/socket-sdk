@@ -3,6 +3,13 @@ export interface HeartBeatPackage {
   flag: boolean;
 }
 
+export interface QueryMessageParams {
+  page: number;
+  size: number;
+  status?: string;
+  dates?: Array<string> | null;
+  noticeTime?: Array<string> | null;
+}
 export interface PingMessage {
   action: string;
   messageId: string;

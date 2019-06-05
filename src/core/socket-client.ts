@@ -1,18 +1,20 @@
 /**
- * @author: @liangjingmin
- * @maitainby @giscafer ,https://github.com/giscafer
+ * @author: @liangjingmin @giscafer
  * @date: 2019-06-03 18:06:57
  * @description: 封装 Socket client
+ * https://github.com/1ziton/socket-sdk
  */
+
 // tslint:disable:no-empty
-import EventProxy from './event';
 import { DEVICECODE, SERVER_PUSH_MESSAGE_TRIGGER } from './constants';
+import EventProxy from './event';
 import { HeartBeat } from './heartbeat';
 import {
   BussinessParams,
   ClientMessage,
   HeartBeatPackage,
   PingMessage,
+  QueryMessageParams,
   UserMessageParams
 } from './interfaces';
 import { Logger } from './logger';
@@ -91,14 +93,17 @@ export default class SocketClient extends HeartBeat {
   initEventHandler() {
     this.ws.onopen = (event: any) => {
       this.onOpenHandler(event);
+      this.onopen();
     };
 
     this.ws.onclose = (event: any) => {
       this.onWebSocketClose(event);
+      this.onclose();
     };
 
     this.ws.onerror = (event: any) => {
       this.onWebSocketError(event);
+      this.onerror();
     };
 
     this.ws.onmessage = (event: any) => {
@@ -106,6 +111,7 @@ export default class SocketClient extends HeartBeat {
       // 如果获取到消息，心跳检测重置
       // 拿到任何消息都说明当前连接是正常的
       this.heartCheck();
+      this.onmessage();
     };
   }
 
@@ -159,7 +165,8 @@ export default class SocketClient extends HeartBeat {
       callback(data);
     });
     try {
-      this.ws.send(JSON.stringify(clientJson));
+      const msg = JSON.stringify(clientJson);
+      this.send(msg);
     } catch (e) {
       Logger.getInstance('markMessageAsRead').error(e);
     }
@@ -199,7 +206,8 @@ export default class SocketClient extends HeartBeat {
       callback(data);
     });
     try {
-      this.ws.send(JSON.stringify(clientJson));
+      const msg = JSON.stringify(clientJson);
+      this.send(msg);
     } catch (e) {
       Logger.getInstance('sendUserMessage').error(e);
     }
@@ -210,10 +218,10 @@ export default class SocketClient extends HeartBeat {
    * @param pageInfo
    * @param callback
    */
-  queryHistoryPushMessage(pageInfo: { page: number; size: number }, callback: Function) {
+  queryHistoryPushMessage(params: QueryMessageParams, callback: Function) {
     const jsonMessage = {
       bussinessAction: SocketAction.QUERY_HISTORY_MESSAGE,
-      ...pageInfo
+      ...params
     };
     const clientJson = {
       action: SocketAction.CLIENT_QUERY,
@@ -226,9 +234,7 @@ export default class SocketClient extends HeartBeat {
     try {
       let msg = JSON.stringify(clientJson);
       // this.ws.send(JSON.stringify(clientJson));
-      this.send(msg, () => {
-        Logger.getInstance(SocketAction.QUERY_HISTORY_MESSAGE).debug('发送成功！');
-      });
+      this.send(msg);
     } catch (e) {
       Logger.getInstance(SocketAction.QUERY_HISTORY_MESSAGE).error(e);
     }
@@ -245,6 +251,7 @@ export default class SocketClient extends HeartBeat {
       if (isFunction(callback)) {
         callback();
       }
+      this.debug('SEND:', message);
     }, 1000);
   }
 
