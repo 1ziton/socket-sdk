@@ -91,22 +91,22 @@ export default class SocketClient extends HeartBeat {
   }
 
   initEventHandler() {
-    this.ws.onopen = (event: any) => {
+    this.ws.onopen = (event: MessageEvent) => {
       this.onOpenHandler(event);
       this.onopen();
     };
 
-    this.ws.onclose = (event: any) => {
+    this.ws.onclose = (event: MessageEvent) => {
       this.onWebSocketClose(event);
       this.onclose();
     };
 
-    this.ws.onerror = (event: any) => {
+    this.ws.onerror = (event: MessageEvent) => {
       this.onWebSocketError(event);
       this.onerror();
     };
 
-    this.ws.onmessage = (event: any) => {
+    this.ws.onmessage = (event: MessageEvent) => {
       this.onMessageHandler(event);
       // 如果获取到消息，心跳检测重置
       // 拿到任何消息都说明当前连接是正常的
@@ -277,7 +277,7 @@ export default class SocketClient extends HeartBeat {
    * websocket message receive handler
    * @param event
    */
-  private onMessageHandler(event: any) {
+  private onMessageHandler(event: MessageEvent) {
     let message = event.data;
     try {
       let msgObj = JSON.parse(event.data) || {};
@@ -364,16 +364,16 @@ export default class SocketClient extends HeartBeat {
     }
   }
 
-  private onOpenHandler(event: any) {
+  private onOpenHandler(event: MessageEvent) {
     Logger.getInstance('websocket status').info('Opening a connection...');
     // heartBeat.reset().start();
   }
-  private onWebSocketClose(event: any) {
+  private onWebSocketClose(event: MessageEvent) {
     // 服务器端主动断开
     Logger.getInstance('websocket status').info('websocket onclose event, connect again');
   }
 
-  private onWebSocketError(event: any) {
+  private onWebSocketError(event: MessageEvent) {
     Logger.getInstance('websocket status').error(event.data);
   }
 }

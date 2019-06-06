@@ -3,7 +3,7 @@ var SocketClient = socketSdk.default;
 $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
 });
-
+demoConnect();
 function demoConnect() {
   var address = $('#address').val();
 
@@ -17,13 +17,14 @@ function createSocket(token, address) {
   client = new SocketClient({
     url: `ws://${address}/echo`,
     authToken: token,
-    pingTimeout: 2500,
-    pongTimeout: 2000,
-    reconnectDelay: 3000,
+    pingTimeout: 480500,
+    pongTimeout: 460000,
+    reconnectDelay: 5000,
     debug: true
   });
   //设置接收消息推送处理方法
   client.watchForReceipt(function(data) {
+    console.log('watchForReceipt');
     log(JSON.stringify(data));
   });
 }
