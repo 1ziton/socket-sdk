@@ -1,7 +1,7 @@
 {
   "name": "socket-sdk",
-  "version": "0.3.1",
-  "description": "Socket sdk for javascript",
+  "version": "0.3.2",
+  "description": "Socket sdk for JavaScript",
   "keywords": [
     "socket",
     "websocket"

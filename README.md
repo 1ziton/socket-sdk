@@ -6,7 +6,7 @@
 [![Build Status](https://travis-ci.org/1ziton/socket-sdk.svg?branch=master)](https://travis-ci.org/1ziton/socket-sdk)
 [![Coveralls](https://img.shields.io/coveralls/1ziton/socket-sdk.svg)](https://coveralls.io/github/1ziton/socket-sdk)
 
-Socket sdk for javascript, library create template base on [typescript-library-starter](https://github.com/alexjoverm/typescript-library-starter)
+Socket sdk for JavaScript, library create template base on [typescript-library-starter](https://github.com/alexjoverm/typescript-library-starter)
 
 ### Usage
 
