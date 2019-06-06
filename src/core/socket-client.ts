@@ -22,7 +22,7 @@ import { SocketAction } from './socket-action';
 import { SocketConfig } from './socket-config';
 import { isFunction, isSupportWebsocket } from './util';
 import { uuid } from './uuid';
-//
+
 const defaultConfig = new SocketConfig();
 
 export default class SocketClient extends HeartBeat {
@@ -36,7 +36,7 @@ export default class SocketClient extends HeartBeat {
   };
 
   private config: SocketConfig;
-  private readonly ep = new EventProxy();
+  private ep = new EventProxy();
 
   ws: WebSocket | any;
 

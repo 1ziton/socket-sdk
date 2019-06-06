@@ -21,7 +21,7 @@ export class Logger {
 
   debug(...args: any[]) {
     if (isNotNil(window) && window.console && isFunction(console.debug)) {
-      console.debug(this.id, `${this.getTime()}ms`, ...args);
+      console.debug(this.id, `${this.getTime()}`, ...args);
     } else {
       this.info(...args);
     }
