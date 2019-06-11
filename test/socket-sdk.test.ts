@@ -10,8 +10,8 @@ const ENDPOINT = 'socket-server-test01.1ziton.com';
 const AUTH_URL = `http://workorder-test01.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
 const WS_URL = `ws://${ENDPOINT}/echo`;
 
-const userId = '13714004401';
-const channel = 'CMP';
+const userCode = '13714004401';
+const sourceChannel = 'CMP';
 let authToken = '';
 let wsInstance: SocketClient;
 /**
@@ -19,13 +19,18 @@ let wsInstance: SocketClient;
  */
 describe('SocketClient test', () => {
   it('getAuthToken is success', async () => {
-    let result: any = await post(AUTH_URL, null, {
-      userId,
-      channel
+    it('getAuthToken is success', async () => {
+      let result: any = await post(AUTH_URL, null, [
+        {
+          userCode,
+          sourceChannel
+        }
+      ]);
+      authToken = result.content;
+      // console.log(result);
+      console.info(`token=${authToken}`);
+      expect(result.resultCode).toBe(200);
     });
-    authToken = result.desc;
-    console.log(`token=${authToken}`);
-    expect(authToken).toBeTruthy();
   });
 
   it('SocketClient is instantiable', () => {

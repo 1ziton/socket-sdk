@@ -6,8 +6,8 @@ import { post } from './../src/core/fetch';
 
 const AUTH_URL = `http://workorder-test01.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
 
-const userId = '15000000000';
-const channel = 'CMP';
+const userCode = '13714004401';
+const sourceChannel = 'CMP';
 let authToken = '';
 
 /**
@@ -15,12 +15,15 @@ let authToken = '';
  */
 describe('AuthToken test', () => {
   it('getAuthToken is success', async () => {
-    let result: any = await post(AUTH_URL, null, {
-      userId,
-      channel
-    });
-    authToken = result.desc;
+    let result: any = await post(AUTH_URL, null, [
+      {
+        userCode,
+        sourceChannel
+      }
+    ]);
+    authToken = result.content;
+    // console.log(result);
     console.info(`token=${authToken}`);
-    expect(authToken).toBeTruthy();
+    expect(result.resultCode).toBe(200);
   });
 });
