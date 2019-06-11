@@ -19,18 +19,16 @@ let wsInstance: SocketClient;
  */
 describe('SocketClient test', () => {
   it('getAuthToken is success', async () => {
-    it('getAuthToken is success', async () => {
-      let result: any = await post(AUTH_URL, null, [
-        {
-          userCode,
-          sourceChannel
-        }
-      ]);
-      authToken = result.content;
-      // console.log(result);
-      console.info(`token=${authToken}`);
-      expect(result.resultCode).toBe(200);
-    });
+    let result: any = await post(AUTH_URL, null, [
+      {
+        userCode,
+        sourceChannel
+      }
+    ]);
+    authToken = result.content;
+    // console.log(result);
+    console.info(`token=${authToken}`);
+    expect(result.resultCode).toBe(200);
   });
 
   it('SocketClient is instantiable', () => {
