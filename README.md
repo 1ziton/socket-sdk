@@ -6,7 +6,7 @@
 [![Build Status](https://travis-ci.org/1ziton/socket-sdk.svg?branch=master)](https://travis-ci.org/1ziton/socket-sdk)
 [![Coveralls](https://img.shields.io/coveralls/1ziton/socket-sdk.svg)](https://coveralls.io/github/1ziton/socket-sdk)
 
-Socket sdk for JavaScript, library create template base on [typescript-library-starter](https://github.com/alexjoverm/typescript-library-starter)
+Socket SDK for JavaScript
 
 ### Usage
 
@@ -41,6 +41,10 @@ import SocketClient from 'socket-sdk/dist/lib/socket-sdk';
 - `npm run build`: Generate bundles and typings, create docs
 - `npm run lint`: Lints code
 - `npm run commit`: Commit using conventional commit style ([husky](https://github.com/typicode/husky) will tell you to use it if you haven't :wink:)
+
+## Relation
+
+- [typescript-library-starter](https://github.com/alexjoverm/typescript-library-starter)
 
 ## Contributing
 
