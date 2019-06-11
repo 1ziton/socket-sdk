@@ -6,10 +6,11 @@ import SocketClient, { SocketConfig } from '../src/index';
 import { post } from './../src/core/fetch';
 
 const ENDPOINT = 'socket-server-test01.1ziton.com';
-const AUTH_URL = `http://${ENDPOINT}/api/message/getAuthStr`;
+// const AUTH_URL = `http://${ENDPOINT}/api/message/getAuthStr`;
+const AUTH_URL = `http://workorder-test01.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
 const WS_URL = `ws://${ENDPOINT}/echo`;
 
-const userId = '15000000000';
+const userId = '13714004401';
 const channel = 'CMP';
 let authToken = '';
 let wsInstance: SocketClient;

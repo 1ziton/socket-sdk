@@ -24,7 +24,7 @@ export interface ClientMessage {
 
 export interface BussinessParams {
   bussinessAction: string;
-  contentId: string;
+  contentIds: Array<string>;
 }
 
 export interface Group {

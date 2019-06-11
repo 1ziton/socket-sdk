@@ -30,10 +30,10 @@ export default class SocketClient extends HeartBeat {
 
   private watchForReceiptFlag = false;
 
-  private heartBeatPackage: HeartBeatPackage = {
+  /*  private heartBeatPackage: HeartBeatPackage = {
     messageId: '',
     flag: false
-  };
+  }; */
 
   private config: SocketConfig;
   private ep = new EventProxy();
@@ -148,13 +148,13 @@ export default class SocketClient extends HeartBeat {
 
   /**
    * 消息已读动作
-   * @param contentId
+   * @param contentIds 消息id数组，支持批量
    * @param callback
    */
-  markMessageAsRead(contentId: string, callback: Function) {
+  markMessageAsRead(contentIds: Array<string>, callback: Function) {
     const jsonMessage: BussinessParams = {
       bussinessAction: SocketAction.MESSAGE_READ,
-      contentId: contentId
+      contentIds
     };
     const clientJson: ClientMessage = {
       action: SocketAction.CLIENT_QUERY,

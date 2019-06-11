@@ -4,8 +4,7 @@
 
 import { post } from './../src/core/fetch';
 
-const ENDPOINT = 'socket-server-test01.1ziton.com';
-const AUTH_URL = `http://${ENDPOINT}/api/message/getAuthStr`;
+const AUTH_URL = `http://workorder-test01.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
 
 const userId = '15000000000';
 const channel = 'CMP';
