@@ -4,7 +4,7 @@
 
 import { post } from './../src/core/fetch';
 
-const AUTH_URL = `http://workorder-test01.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
+const AUTH_URL = `https://uatworkorder.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
 
 const userCode = '13714004401';
 const sourceChannel = 'CMP';

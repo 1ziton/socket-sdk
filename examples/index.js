@@ -1,6 +1,8 @@
 var client;
 var SocketClient = socketSdk.default;
-$.ajaxSetup({
+var socketUrl = 'uatsocket.1ziton.com';
+//uatsocket.1ziton.com/echo
+wss: $.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
 });
 demoConnect();
@@ -8,17 +10,20 @@ function demoConnect() {
   var address = $('#address').val();
 
   if (!address) {
-    address = 'socket-server-test01.1ziton.com';
+    address = socketUrl;
   }
   getAuthStr(address);
 }
 
 function createSocket(token, address) {
   client = new SocketClient({
-    url: `ws://${address}/echo`,
+    url: `wss://${address}/echo`,
     authToken: token,
-    pingTimeout: 480500,
+    /*     pingTimeout: 480500,
     pongTimeout: 460000,
+    reconnectDelay: 5000, */
+    pingTimeout: 3500,
+    pongTimeout: 5000,
     reconnectDelay: 5000,
     debug: true
   });
@@ -35,8 +40,8 @@ function createSocket(token, address) {
 function getAuthStr() {
   var userId = $('#userId').val();
   var channel = $('#channel').val();
-  var address = $('#address').val();
-  var url = 'http://' + address + '/api/message/getAuthStr';
+
+  var url = 'https://uatworkorder.1ziton.com/api/workOrder/v1/manage/message/getAuthToken';
 
   var result = null;
 
@@ -44,14 +49,16 @@ function getAuthStr() {
     url: url,
     type: 'post',
     dataType: 'json',
-    data: JSON.stringify({
-      userId: userId,
-      channel: channel
-    }),
+    data: JSON.stringify([
+      {
+        userCode: userId,
+        sourceChannel: channel
+      }
+    ]),
     async: false,
     success: function(data) {
-      result = data.desc;
-      createSocket(result, address);
+      result = data.content;
+      createSocket(result, socketUrl);
     }
   });
   console.log('get authStr=' + result);
