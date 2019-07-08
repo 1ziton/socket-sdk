@@ -179,7 +179,7 @@ export default class SocketClient extends HeartBeat {
    */
   markMessageAsRead(contentIds: Array<string>, callback: Function) {
     const jsonMessage: BussinessParams = {
-      bussinessAction: SocketAction.SUM_MESSAGE_ACTION,
+      bussinessAction: SocketAction.MESSAGE_READ,
       contentIds
     };
     const clientJson: ClientMessage = {
