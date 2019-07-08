@@ -15,7 +15,8 @@ import {
   HeartBeatPackage,
   PingMessage,
   QueryMessageParams,
-  UserMessageParams
+  UserMessageParams,
+  MessageStatisticsParams
 } from './interfaces';
 import { Logger } from './logger';
 import { SocketAction } from './socket-action';
@@ -147,13 +148,38 @@ export default class SocketClient extends HeartBeat {
   }
 
   /**
+   * 消息统计
+   * @param status 已读 READ，传只有返回readCount字段有值，未读 UNREAD，传只有返回unreadCount字段有值， 不传统计所有，返回3个字段都有值
+   * @param callback
+   */
+  messageStatistics(params: MessageStatisticsParams, callback: Function) {
+    const jsonMessage = {
+      bussinessAction: SocketAction.SUM_MESSAGE_ACTION,
+      ...params
+    };
+    const clientJson: ClientMessage = {
+      action: SocketAction.CLIENT_QUERY,
+      messageId: uuid(16, 16),
+      jsonMessage: JSON.stringify(jsonMessage)
+    };
+    this.ep.once(`ep_result_message_${clientJson.messageId}`, (data: any) => {
+      callback(data);
+    });
+    try {
+      const msg = JSON.stringify(clientJson);
+      this.send(msg);
+    } catch (e) {
+      Logger.getInstance('messageStatistics').error(e);
+    }
+  }
+  /**
    * 消息已读动作
    * @param contentIds 消息id数组，支持批量
    * @param callback
    */
   markMessageAsRead(contentIds: Array<string>, callback: Function) {
     const jsonMessage: BussinessParams = {
-      bussinessAction: SocketAction.MESSAGE_READ,
+      bussinessAction: SocketAction.SUM_MESSAGE_ACTION,
       contentIds
     };
     const clientJson: ClientMessage = {
@@ -296,20 +322,9 @@ export default class SocketClient extends HeartBeat {
         this.ep.trigger(`ep_message_${SocketAction.SEND_MESSAGE_USER}`, jsonResult);
         this.debug(action, message);
       } else if (action === SocketAction.CLIENT_PING) {
-        // let content = JSON.parse(msgObj.jsonResult);
-        /* if (!this.heartBeatPackage.flag) {
-          return;
-        }
-        if (msgObj.messageId === this.heartBeatPackage.messageId) {
-          this.heartBeatPackage.messageId = msgObj;
-          this.heartBeatPackage.flag = false;
-        } else {
-          this.disConnect();
-          this.connect();
-        } */
         this.debug('PING', message);
       } else if (action === SocketAction.REGISTER_GROUP) {
-        let jsonResult = JSON.parse(msgObj.jsonResult);
+        // let jsonResult = JSON.parse(msgObj.jsonResult);
         // ep.trigger(`ep_message_${msgId}`, jsonResult);
         this.debug(action, message);
       } else if (action === SocketAction.QUERY_RESULT) {
@@ -370,7 +385,7 @@ export default class SocketClient extends HeartBeat {
   }
   private onWebSocketClose(event: MessageEvent) {
     // 服务器端主动断开
-    Logger.getInstance('websocket status').info('websocket onclose event, connect again');
+    Logger.getInstance('websocket status').info('websocket onclose event, connect again', event);
   }
 
   private onWebSocketError(event: MessageEvent) {

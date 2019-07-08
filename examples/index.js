@@ -2,7 +2,7 @@ var client;
 var SocketClient = socketSdk.default;
 var socketUrl = 'uatsocket.1ziton.com';
 //uatsocket.1ziton.com/echo
-wss: $.ajaxSetup({
+$.ajaxSetup({
   contentType: 'application/json; charset=utf-8'
 });
 demoConnect();
@@ -17,7 +17,7 @@ function demoConnect() {
 
 function createSocket(token, address) {
   client = new SocketClient({
-    url: `wss://${address}/echo`,
+    url: `ws://${address}/echo`,
     authToken: token,
     /*     pingTimeout: 480500,
     pongTimeout: 460000,
@@ -123,6 +123,13 @@ function demoQueryHistoryMessage() {
   });
 }
 
+function demoMessageStatistics() {
+  var userId = $('#userId').val();
+  var channel = $('#channel').val();
+  client.messageStatistics({ userId: userId, channel: channel }, function(data) {
+    console.log('demo message statistics response data:' + JSON.stringify(data));
+  });
+}
 /**
  * 已读消息触发
  */

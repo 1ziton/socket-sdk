@@ -37,3 +37,8 @@ export interface UserMessageParams {
   group: Group;
   content: string;
 }
+export interface MessageStatisticsParams {
+  userId: string;
+  channel: string;
+  status?: string;
+}

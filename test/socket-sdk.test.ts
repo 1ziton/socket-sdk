@@ -6,11 +6,11 @@ import SocketClient, { SocketConfig } from '../src/index';
 import { post } from './../src/core/fetch';
 
 const ENDPOINT = 'uatsocket.1ziton.com';
-// const AUTH_URL = `http://${ENDPOINT}/api/message/getAuthStr`;
+// const ENDPOINT = 'socket-test01.1ziton.com';
 const AUTH_URL = `https://uatworkorder.1ziton.com/api/workOrder/v1/manage/message/getAuthToken`;
 const WS_URL = `wss://${ENDPOINT}/echo`;
 
-const userCode = '13714004401';
+const userCode = 'CYSA201709898';
 const sourceChannel = 'CMP';
 let authToken = '';
 let wsInstance: SocketClient;
@@ -42,16 +42,28 @@ describe('SocketClient test', () => {
 
   it('Server URL is normal', () => {
     const url = wsInstance.url;
-    expect(url).toBe(WS_URL);
+    expect(url).toBeTruthy();
   });
+});
 
+describe('API test', () => {
   it('queryHistoryPushMessage is success', done => {
     wsInstance.queryHistoryPushMessage({ page: 1, size: 20, status: 'UNREAD' }, (result: any) => {
       const { code, data, first } = result;
-      console.log(code, data, first);
+      // console.log(code, data, first);
       expect(code).toBe(2000);
       expect(data).toBeInstanceOf(Array);
       expect(first).toBeTruthy();
+      done();
+    });
+  });
+  it('messageStatistics is success', done => {
+    wsInstance.messageStatistics({ userId: userCode, channel: sourceChannel }, (result: any) => {
+      const { code, data = {} } = result;
+      expect(code).toBe(2000);
+      expect(data.totalCount).not.toBeNull();
+      expect(data.readCount).not.toBeNull();
+      expect(data.unreadCount).not.toBeNull();
       done();
     });
   });
