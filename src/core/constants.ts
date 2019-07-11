@@ -1,7 +1,5 @@
 import { uuid } from './uuid';
 
-export const DEVICECODE = uuid(32, 16);
-
 /**
  * 重试次数
  */

@@ -6,7 +6,7 @@
  */
 
 // tslint:disable:no-empty
-import { DEVICECODE, SERVER_PUSH_MESSAGE_TRIGGER } from './constants';
+import { SERVER_PUSH_MESSAGE_TRIGGER } from './constants';
 import EventProxy from './event';
 import { HeartBeat } from './heartbeat';
 import {
@@ -64,6 +64,8 @@ export default class SocketClient extends HeartBeat {
   }
 
   connect() {
+    // 设备码为了区分同个用户不同地方登录，精确推送到每个窗口
+    const DEVICECODE = uuid(32, 16);
     try {
       this.ws = new WebSocket(
         `${this.config.url}?authStr=${this.config.authToken}&deviceCode=${DEVICECODE}`
