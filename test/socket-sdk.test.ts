@@ -44,6 +44,16 @@ describe('SocketClient test', () => {
     const url = wsInstance.url;
     expect(url).toBeTruthy();
   });
+  /* it('DeviceCode is  Unique', () => {
+    const config: SocketConfig = {
+      url: WS_URL,
+      authToken
+    };
+    let wsInstance2 = new SocketClient(config);
+    expect(wsInstance.deviceCode.length).toEqual(32);
+    expect(wsInstance2.deviceCode.length).toEqual(32);
+    expect(wsInstance2.deviceCode).not.toEqual(wsInstance.deviceCode);
+  }); */
 });
 
 describe('API test', () => {

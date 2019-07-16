@@ -42,4 +42,6 @@ export class SocketConfig {
   repeatLimit? = 20;
   /** Enable client debugging? */
   debug? = false;
+
+  deviceCode?: string;
 }

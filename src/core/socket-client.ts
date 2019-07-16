@@ -25,6 +25,7 @@ import { isFunction, isSupportWebsocket } from './util';
 import { uuid } from './uuid';
 
 const defaultConfig = new SocketConfig();
+const deviceCode = uuid(32, 16);
 
 export default class SocketClient extends HeartBeat {
   private watchForUserReceiptFlag = false;
@@ -43,7 +44,7 @@ export default class SocketClient extends HeartBeat {
 
   constructor(config: SocketConfig) {
     super({ ...defaultConfig, ...config });
-    this.config = { ...defaultConfig, ...config };
+    this.config = { ...defaultConfig, ...config, deviceCode };
     this.debug('SocketConfig', JSON.stringify(this.config));
     this.initAndConnect();
   }
@@ -65,10 +66,10 @@ export default class SocketClient extends HeartBeat {
 
   connect() {
     // 设备码为了区分同个用户不同地方登录，精确推送到每个窗口
-    const DEVICECODE = uuid(32, 16);
+    // const DEVICECODE = uuid(32, 16);
     try {
       this.ws = new WebSocket(
-        `${this.config.url}?authStr=${this.config.authToken}&deviceCode=${DEVICECODE}`
+        `${this.config.url}?authStr=${this.config.authToken}&deviceCode=${deviceCode}`
       );
       this.initEventHandler();
     } catch (e) {
